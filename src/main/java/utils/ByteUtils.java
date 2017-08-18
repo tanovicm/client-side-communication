@@ -5,66 +5,82 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
- * Utillity class.
+ * Utility class for operating with bytes which are received and sent to socket.
  *
- * @author Marijana
+ * @author Marijana Tanovic
  *
  */
-public class ByteUtils {
-	/**
-	 *
-	 * @param bytes
-	 *            Bytes
-	 * @param nthInt
-	 *            Nth int.
-	 * @return Int.
-	 */
-	public static int getNthInteger(final byte[] bytes, final int nthInt) {
-		return ByteBuffer.wrap(bytes).getInt();
-		// TODO DA LI MOZE OVAKO?
-	}
+public final class ByteUtils {
 
-	/**
-	 *
-	 * @param fileds
-	 *            Variable array of ints.
-	 * @return bytes.
-	 */
-	public static byte[] createByteArray(final int... fileds) {
-		final ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES * fileds.length);
-		buffer.asIntBuffer().put(fileds);
-		return buffer.array();
-	}
+    /**
+     * Utility classes should not have a public or default constructor.
+     */
+    private ByteUtils() {}
 
-	/**
-	 *
-	 * @param socket
-	 *            Socket.
-	 * @param nthBytes
-	 *            N bytes.
-	 * @return Array of bytes.
-	 * @throws IOException
-	 *             Exception.
-	 */
-	public static byte[] readNBytesFromSocket(final Socket socket, final int nthBytes) throws IOException {
-		final byte[] bytes = new byte[nthBytes];
-		new DataInputStream(socket.getInputStream()).readFully(bytes);
-		return bytes;
-	}
+    /**
+     *
+     * @param bytes
+     *            Bytes from which integer should be read.
+     * @param nthInteger
+     *            Nth integer from array of bytes.
+     * @return Nth integer from array of bytes.
+     */
+    public static int getNthInteger(final byte[] bytes, final int nthInteger) {
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.position(nthInteger * Integer.BYTES);
+        return Integer.reverseBytes(buffer.getInt());
+    }
 
-	/**
-	 *
-	 * @param socket
-	 *            Socket.
-	 * @param bytes
-	 *            Bytes.
-	 * @throws IOException
-	 *             Exception.
-	 */
-	public static void writeByteArrayToSocket(final Socket socket, final byte[] bytes) throws IOException {
-		new DataOutputStream(socket.getOutputStream()).write(bytes);
-	}
+    /**
+     * Creates array of bytes from given array.
+     *
+     * @param fileds
+     *            Variable array of integers.
+     * @return Array of bytes from array of given integers.
+     */
+    public static byte[] createByteArray(final int... fileds) {
+        final ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES * fileds.length);
+        Arrays.stream(fileds).forEach(f -> buffer.putInt(Integer.reverseBytes(f)));
+        return buffer.array();
+    }
+
+    /**
+     * Read given number of bytes from socket.
+     *
+     * @param socket
+     *            Socket from which read bytes.
+     * @param numBytes
+     *            Number of bytes to read.
+     * @return Array with numBytes read.
+     * @throws IOException
+     *             Exception can raise reading from socket.
+     */
+    public static byte[] readNBytesFromSocket(final Socket socket, final int numBytes) throws IOException {
+        final byte[] bytes = new byte[numBytes];
+        new DataInputStream(socket.getInputStream()).readFully(bytes);
+
+        IntStream.range(0, bytes.length).forEach(i -> System.out.print((bytes[i] & 0xff) + " "));
+        System.out.println();
+
+        return bytes;
+    }
+
+    /**
+     * Writing array of bytes to socket.
+     *
+     * @param socket
+     *            Socket where bytes should be written.
+     * @param bytes
+     *            Bytes that should be written.
+     * @throws IOException
+     *             Exception can raise if socket is closed or can't be written to.
+     */
+    public static void writeByteArrayToSocket(final Socket socket, final byte[] bytes) throws IOException {
+        new DataOutputStream(socket.getOutputStream()).write(bytes);
+    }
 
 }

@@ -9,17 +9,18 @@ import typesofpackages.MessagePackage;
  * @author Marijana Tanovic
  */
 public class DummyPackageFactory implements PackageFactory {
-	/**
-	 *
-	 * @param header
-	 *            Header.
-	 * @param body
-	 *            Body
-	 * @return Message package.
-	 */
-	@Override
-	public MessagePackage readPackage(final byte[] header, final byte[] body) {
-		return new DummyPackage(header, body);
-	}
+    /**
+     * Creates the dummy package based on header and body.
+     *
+     * @param header
+     *            Header of package.
+     * @param body
+     *            Body of package.
+     * @return Dummy message package based on arguments.
+     */
+    @Override
+    public MessagePackage createPackage(final byte[] header, final byte[] body) {
+        return new DummyPackage(header, body);
+    }
 
 }

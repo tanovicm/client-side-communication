@@ -11,37 +11,40 @@ import typesofpackages.MessagePackage;
  * @author Marijana Tanovic
  */
 public class PackageHandler extends Thread {
-	/**
-	 * Package to handle.
-	 */
-	private MessagePackage pack;
 
-	/**
-	 * Socket.
-	 */
-	private Socket socket;
+    /**
+     * Package to be handled.
+     */
+    private MessagePackage pack;
 
-	/**
-	 *
-	 * @param pack
-	 *            Package.
-	 * @param socket
-	 *            Socket.
-	 */
-	public PackageHandler(final MessagePackage pack, final Socket socket) {
-		this.pack = pack;
-		this.socket = socket;
-	}
+    /**
+     * Client socket.
+     */
+    private Socket socket;
 
-	/**
-	 * Run.
-	 */
-	public void run() {
-		try {
-			pack.send(socket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Constructor.
+     *
+     * @param pack
+     *            Package gotten from socket.
+     * @param socket
+     *            Socket connection.
+     */
+    public PackageHandler(final MessagePackage pack, final Socket socket) {
+        this.pack = pack;
+        this.socket = socket;
+    }
+
+    /**
+     * Runs thread to send handled package.
+     */
+    public void run() {
+        try {
+            pack.send(socket);
+            System.out.println("Send: " + pack);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

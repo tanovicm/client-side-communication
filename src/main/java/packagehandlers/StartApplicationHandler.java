@@ -17,47 +17,51 @@ import typesofpackages.MessagePackage;
  * @author Marijana Tanovic
  */
 public class StartApplicationHandler extends Thread {
-	/**
-	 * File.
-	 */
-	private File fileName;
-	/**
-	 * Socket.
-	 */
-	private Socket socket;
+    /**
+     * File where are stored unsent packages..
+     */
+    private File fileName;
 
-	/**
-	 *
-	 * @param fileName
-	 *            FIle.
-	 * @param socket
-	 *            Socket.
-	 */
-	public StartApplicationHandler(final File fileName, final Socket socket) {
-		this.fileName = fileName;
-		this.socket = socket;
+    /**
+     * Connection established on socket.
+     */
+    private Socket socket;
 
-	}
+    /**
+     * Constructor.
+     *
+     * @param fileName
+     *            File from which packages are loaded.
+     * @param socket
+     *            Socket to which packages should be sent.
+     */
+    public StartApplicationHandler(final File fileName, final Socket socket) {
+        this.fileName = fileName;
+        this.socket = socket;
 
-	/**
-	 * RUn.
-	 */
-	@SuppressWarnings("unchecked")
+    }
 
-	public void run() {
-		System.out.println(fileName.length());
+    /**
+     * New thread is run to handle start of application.
+     */
+    @SuppressWarnings("unchecked")
 
-		try (FileInputStream fis = new FileInputStream(fileName)) {
-			final ObjectInputStream ois = new ObjectInputStream(fis);
+    public void run() {
 
-			final List<DummyPackage> packages = (List<DummyPackage>) ois.readObject();
-			packages.forEach(pack -> {
-				final MessagePackage p = pack.expired() ? new CancelPackage(pack) : pack;
-				new PackageHandler(p, socket).start();
-			});
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+        if (fileName.length() == 0) {
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            final List<DummyPackage> packages = (List<DummyPackage>) ois.readObject();
+            packages.forEach(pack -> {
+                final MessagePackage p = pack.expired() ? new CancelPackage(pack) : pack;
+                System.out.println(p);
+                new PackageHandler(p, socket).start();
+            });
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

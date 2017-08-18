@@ -2,7 +2,6 @@ package typesofpackages;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import client.Client;
@@ -14,70 +13,86 @@ import utils.ByteUtils;
  * @author Marijana Tanovic
  */
 public class DummyPackage extends MessagePackage {
-	/**
-	 * Serial sta god.
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 * Time of creation.
-	 */
-	private Date timeOfCreation;
 
-	/**
-	 *
-	 * @param header
-	 *            Message header.
-	 *
-	 * @param body
-	 *            Message body.
-	 */
-	public DummyPackage(final byte[] header, final byte[] body) {
-		super(header, body);
-		this.timeOfCreation = new Date();
-	}
+    /**
+     * Serializable class version number.
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 *
-	 * @return Id.
-	 */
-	public int getId() {
-		return ByteUtils.getNthInteger(getBody(), 0);
-	}
+    /**
+     * Time of package creation.
+     */
+    private long timeOfCreation;
 
-	/**
-	 *
-	 * @return Delay.
-	 */
-	public int getDelay() {
-		final int delay = ByteUtils.getNthInteger(getBody(), 0);
-		final int elapsedTime = (int) ((timeOfCreation.getTime() - new Date().getTime()) / (1000));
-		return delay - elapsedTime;
-	}
+    /**
+     * Constructor with additional set of time of creation.
+     *
+     * @param header
+     *            Header used for creating dummy package.
+     *
+     * @param body
+     *            Body used for creating dummy package.
+     */
+    public DummyPackage(final byte[] header, final byte[] body) {
+        super(header, body);
+        this.timeOfCreation = System.nanoTime();
+    }
 
-	/**
-	 *
-	 * @return True or false, whether package expired.
-	 */
-	public boolean expired() {
-		return getDelay() <= 0;
-	}
+    /**
+     * Getter for id of package.
+     *
+     * @return Id of package.
+     */
+    public int getId() {
+        return ByteUtils.getNthInteger(getBody(), 0);
+    }
 
-	/**
-	 * Send package to socket.
-	 */
-	@Override
-	public void send(final Socket socket) throws IOException {
-		Client.activePackages.add(this);
+    /**
+     * Getter for delay.
+     *
+     * @return Delay for package in seconds.
+     */
+    public long getDelay() {
+        final int delay = ByteUtils.getNthInteger(getBody(), 1);
+        final long elapsedTime = ((System.nanoTime() - timeOfCreation) / (1000000000));
+        return delay - elapsedTime;
+    }
 
-		try {
-			TimeUnit.SECONDS.sleep(getDelay());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    /**
+     * Method for checking whether package has expired.
+     *
+     * @return True or false, whether package expired.
+     */
+    public boolean expired() {
+        return getDelay() <= 0;
+    }
 
-		super.send(socket);
+    @Override
+    public final String toString() {
+        final int delay = ByteUtils.getNthInteger(getBody(), 1);
+        return "DummyPackage (id: " + getId() + ", delay: " + delay + ")";
+    }
 
-		Client.activePackages.remove(this);
-	}
+    /**
+     * Sends dummy package to socket.
+     *
+     * @throws IOException
+     *             Sending includes writing to socket which may throw exception.
+     */
+    @Override
+    public void send(final Socket socket) throws IOException {
+
+        Client.activePackages.add(this);
+
+        try {
+            TimeUnit.SECONDS.sleep(getDelay());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        super.send(socket);
+
+        Client.activePackages.remove(this);
+    }
 
 }

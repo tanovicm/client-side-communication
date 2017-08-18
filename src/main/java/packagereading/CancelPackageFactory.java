@@ -9,16 +9,17 @@ import typesofpackages.MessagePackage;
  * @author Marijana Tanovic
  */
 public class CancelPackageFactory implements PackageFactory {
-	/**
-	 *
-	 * @param header
-	 *            Header.
-	 * @param body
-	 *            Body
-	 * @return Message package.
-	 */
-	@Override
-	public MessagePackage readPackage(final byte[] header, final byte[] body) {
-		return new CancelPackage(header, body);
-	}
+    /**
+     * Creates cancel package from parameters.
+     *
+     * @param header
+     *            Header of package.
+     * @param body
+     *            Body of package.
+     * @return Cancel message package with passed arguments.
+     */
+    @Override
+    public MessagePackage createPackage(final byte[] header, final byte[] body) {
+        return new CancelPackage(header, body);
+    }
 }

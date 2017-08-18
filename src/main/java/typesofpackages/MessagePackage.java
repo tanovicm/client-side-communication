@@ -13,74 +13,85 @@ import utils.ByteUtils;
  */
 
 public abstract class MessagePackage implements Serializable {
-	/**
-	 * Serial sta god.
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 * Header in bytes.
-	 */
-	private byte[] header;
-	/**
-	 * Body in bytes.
-	 */
-	private byte[] body;
 
-	/**
-	 *
-	 * @param header
-	 *            Message header.
-	 *
-	 * @param body
-	 *            Message body.
-	 */
-	MessagePackage(final byte[] header, final byte[] body) {
-		this.header = header;
-		this.body = body;
-	}
+    /**
+     * Serializable class version number.
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 *
-	 * @return Body of message as array of bytes.
-	 */
-	public byte[] getBody() {
-		return body;
-	}
+    /**
+     * Header as array of bytes.
+     */
+    private byte[] header;
 
-	/**
-	 *
-	 * @return Header as array of bytes.
-	 */
-	public byte[] getHeader() {
-		return header;
-	}
+    /**
+     * Body as array of bytes.
+     */
+    private byte[] body;
 
-	/**
-	 *
-	 * @return Package id.
-	 */
-	public int getPackageId() {
-		return ByteUtils.getNthInteger(header, 0);
-	}
+    /**
+     * Constructor.
+     *
+     * @param header
+     *            Header of received package.
+     *
+     * @param body
+     *            Body of received package.
+     */
+    MessagePackage(final byte[] header, final byte[] body) {
+        this.header = header;
+        this.body = body;
+    }
 
-	/**
-	 *
-	 * @return Length of package.
-	 */
-	public int getPackageLength() {
-		return ByteUtils.getNthInteger(header, 1);
-	}
+    /**
+     * Getter for body.
+     *
+     * @return Body of message as array of bytes.
+     */
+    public byte[] getBody() {
+        return body;
+    }
 
-	/**
-	 *
-	 * @param socket
-	 *            Socket.
-	 * @throws IOException
-	 *             Exception.
-	 */
-	public void send(final Socket socket) throws IOException {
-		ByteUtils.writeByteArrayToSocket(socket, header);
-		ByteUtils.writeByteArrayToSocket(socket, body);
-	}
+    /**
+     * Getter for header.
+     *
+     * @return Header as array of bytes.
+     */
+    public byte[] getHeader() {
+        return header;
+    }
+
+    /**
+     * Getter for package id.
+     *
+     * @return Package id.
+     */
+    public int getPackageId() {
+        return ByteUtils.getNthInteger(header, 0);
+    }
+
+    /**
+     * Getter for length of package.
+     *
+     * @return Length of package.
+     */
+    public int getPackageLength() {
+        return ByteUtils.getNthInteger(header, 1);
+    }
+
+    /**
+     * Method to send bytes to socket(server).
+     *
+     * @param socket
+     *            Socket where bytes should be sent.
+     * @throws IOException
+     *             Exception may raise while writing.
+     */
+    public void send(final Socket socket) throws IOException {
+        synchronized (socket) {
+            ByteUtils.writeByteArrayToSocket(socket, header);
+            ByteUtils.writeByteArrayToSocket(socket, body);
+        }
+    }
 
 }

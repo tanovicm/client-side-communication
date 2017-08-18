@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import client.Client;
-import typesofpackages.MessagePackage;
 
 /**
  * The Package class is used for managing packages at client side.
@@ -16,77 +15,48 @@ import typesofpackages.MessagePackage;
 
 public class ExitApplicationHandler extends Thread {
 
-	/**
-	 * Number indicating type of package.
-	 */
-	private File fileName;
+    /**
+     * Number indicating type of package.
+     */
+    private File fileName;
 
-	/**
-	 * @param fileName
-	 *            Name of the file where packages should be listed.
-	 */
-	public ExitApplicationHandler(final File fileName) {
-		this.setFileName(fileName);
-	}
+    /**
+     * @param fileName
+     *            Name of the file where packages should be listed.
+     */
+    public ExitApplicationHandler(final File fileName) {
+        this.setFileName(fileName);
+    }
 
-	/**
-	 * What to do.
-	 */
-	public void run() {
-		FileOutputStream fout = null;
-		ObjectOutputStream oos = null;
+    /**
+     * New thread for handling exiting from application.
+     */
+    public void run() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(Client.activePackages);
+            System.err.println("Saved packages!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-		for (MessagePackage pack : Client.activePackages) {
-			try {
+    /**
+     * Getter for name of the file where packages should be stored.
+     *
+     * @return Filename.
+     */
+    public File getFileName() {
+        return fileName;
+    }
 
-				fout = new FileOutputStream(fileName);
-				oos = new ObjectOutputStream(fout);
-				oos.writeObject(pack);
-
-				System.out.println("Done");
-
-			} catch (IOException ex) {
-
-				ex.printStackTrace();
-
-			} finally {
-
-				if (fout != null) {
-					try {
-						fout.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (oos != null) {
-					try {
-						oos.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-
-			}
-
-		}
-		System.err.println("Caoooo!");
-	}
-
-	/**
-	 *
-	 * @return Filename.
-	 */
-	public File getFileName() {
-		return fileName;
-	}
-
-	/**
-	 * @param fileName
-	 *            Setter.
-	 */
-	public void setFileName(final File fileName) {
-		this.fileName = fileName;
-	}
+    /**
+     * Setter for name of the file where packages should be stored.
+     *
+     * @param fileName
+     *            Setter.
+     */
+    public void setFileName(final File fileName) {
+        this.fileName = fileName;
+    }
 
 }

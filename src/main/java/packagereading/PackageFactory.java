@@ -9,13 +9,14 @@ import typesofpackages.MessagePackage;
  *
  */
 public interface PackageFactory {
-	/**
-	 *
-	 * @param header
-	 *            Header.
-	 * @param body
-	 *            Body.
-	 * @return Message Package.
-	 */
-	MessagePackage readPackage(byte[] header, byte[] body);
+    /**
+     * Creates package.
+     *
+     * @param header
+     *            Header of gotten package.
+     * @param body
+     *            Body of gotten package.
+     * @return New message package based on parameters.
+     */
+    MessagePackage createPackage(byte[] header, byte[] body);
 }

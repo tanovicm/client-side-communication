@@ -3,8 +3,8 @@ package client;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import packagehandlers.ExitApplicationHandler;
@@ -20,126 +20,85 @@ import typesofpackages.MessagePackage;
  *
  * @author Marijana Tanovic
  */
-public class Client {
-	/**
-	 * List of all active packages in application.
-	 */
-	public static List<MessagePackage> activePackages = new ArrayList<MessagePackage>();
-	/**
-	 * Connection address.
-	 */
-	private static String connectionIpAddress;
-	/**
-	 * Connection port.
-	 */
-	private static int connectionPort;
-	/**
-	 * Filename.
-	 */
-	private static File fileName;
+public final class Client {
+    /**
+     * List of all active packages in application while running.
+     */
+    public static List<MessagePackage> activePackages = Collections.synchronizedList(new ArrayList<MessagePackage>());
 
-	/**
-	 *
-	 * @return Address of connection.
-	 */
-	public static String getConnectionIpAddress() {
-		return connectionIpAddress;
-	}
+    /**
+     * Connection address.
+     */
+    private static String connectionIpAddress;
 
-	/**
-	 *
-	 * @param connectionIpAddress
-	 *            Address of connection.
-	 */
-	public static void setConnectionIpAddress(final String connectionIpAddress) {
-		Client.connectionIpAddress = connectionIpAddress;
-	}
+    /**
+     * Connection port.
+     */
+    private static int connectionPort;
 
-	/**
-	 *
-	 * @return Port.
-	 */
-	public static int getConnectionPort() {
-		return connectionPort;
-	}
+    /**
+     * Filename, where are stored packages which couldn't be sent.
+     */
+    private static File fileName;
 
-	/**
-	 *
-	 * @param connectionPort
-	 *            Port.
-	 */
-	public static void setConnectionPort(final int connectionPort) {
-		Client.connectionPort = connectionPort;
-	}
+    /**
+     * Utility classes should not have a public or default constructor.
+     */
+    private Client() {}
 
-	/**
-	 *
-	 * @return File Name.
-	 */
-	public static File getFileName() {
-		return fileName;
-	}
+    /**
+     * Registers all types of packages which could be received from server.
+     */
+    public static void registryAllTypesOfPackages() {
+        final int dummyPackageId = 1;
+        final int cancelPackageId = 2;
+        PackageReader.registerTypeOfPackage(dummyPackageId, new DummyPackageFactory());
+        PackageReader.registerTypeOfPackage(cancelPackageId, new CancelPackageFactory());
 
-	/**
-	 *
-	 * @param fileName
-	 *            Name of file.
-	 */
-	public static void setFileName(final File fileName) {
-		Client.fileName = fileName;
-	}
+    }
 
-	/**
-	 * Registers all types of packages from server.
-	 */
-	static void registryAllTypesOfPackages() {
-		final int dummyPackageId = 1;
-		final int cancelPackageId = 2;
-		PackageReader.registerTypeOfPackage(dummyPackageId, new DummyPackageFactory());
-		PackageReader.registerTypeOfPackage(cancelPackageId, new CancelPackageFactory());
+    /**
+     * General settings for application.
+     *
+     * @param args
+     *            Arguments for running application.
+     */
+    public static void parseArgs(final String[] args) {
+        if (args.length != 2) {
+            System.out.println("Proper Usage is: java program adress port");
+            System.exit(0);
+        }
 
-	}
+        connectionIpAddress = args[0];
+        connectionPort = Integer.parseInt(args[1]);
+        fileName = new File("/home/marijana/workspace/Untitled Folder/help.txt");
 
-	/**
-	 *
-	 * @param args
-	 *            Parameters for application.
-	 */
-	public static void main(final String[] args) {
-		Runtime.getRuntime().addShutdownHook(new ExitApplicationHandler(fileName));
+        System.out.println("ADRESA: " + connectionIpAddress);
+        System.out.println("Port: " + connectionPort);
+    }
 
-		if (args.length != 2) {
-			System.out.println("Proper Usage is: java program ipAdress port");
-			System.exit(0);
-		}
-		setConnectionIpAddress(args[0]);
-		setConnectionPort(Integer.parseInt(args[1]));
-		setFileName(new File("/home/marijana/workspace/Untitled Folder/help.txt"));
-		System.out.println("ADRESA");
-		System.out.println(getConnectionIpAddress());
-		System.out.println("Port");
-		System.out.println(getConnectionPort());
-		Socket socket = null;
-		try {
-			socket = new Socket(getConnectionIpAddress(), getConnectionPort());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (fileName.length() != 0) {
-			new StartApplicationHandler(fileName, socket).run();
-		}
-		registryAllTypesOfPackages();
-		while (true) {
-			try {
-				final MessagePackage pack = new PackageReader().read(socket);
-				new PackageHandler(pack, socket).run();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+    /**
+     *
+     * @param args
+     *            Parameters for application.
+     */
+    public static void main(final String[] args) {
+        parseArgs(args);
 
-	}
+        Runtime.getRuntime().addShutdownHook(new ExitApplicationHandler(fileName));
+
+        try (Socket socket = new Socket(connectionIpAddress, connectionPort)) {
+            new StartApplicationHandler(fileName, socket).start();
+
+            registryAllTypesOfPackages();
+            while (true) {
+                final MessagePackage pack = new PackageReader().read(socket);
+                System.out.println("Received: " + pack);
+                new PackageHandler(pack, socket).start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
