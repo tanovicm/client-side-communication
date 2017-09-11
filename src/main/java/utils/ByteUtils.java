@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
- * Utility class for operating with bytes which are received and sent to socket.
+ * ByteUtils class is utility class for operating with bytes which are received and sent to socket.
  *
  * @author Marijana Tanovic
- *
  */
 public final class ByteUtils {
 
@@ -22,6 +20,7 @@ public final class ByteUtils {
     private ByteUtils() {}
 
     /**
+     * From array of bytes and given position, function calculates integer on that position in array of bytes.
      *
      * @param bytes
      *            Bytes from which integer should be read.
@@ -62,10 +61,6 @@ public final class ByteUtils {
     public static byte[] readNBytesFromSocket(final Socket socket, final int numBytes) throws IOException {
         final byte[] bytes = new byte[numBytes];
         new DataInputStream(socket.getInputStream()).readFully(bytes);
-
-        IntStream.range(0, bytes.length).forEach(i -> System.out.print((bytes[i] & 0xff) + " "));
-        System.out.println();
-
         return bytes;
     }
 
@@ -77,10 +72,9 @@ public final class ByteUtils {
      * @param bytes
      *            Bytes that should be written.
      * @throws IOException
-     *             Exception can raise if socket is closed or can't be written to.
+     *             Exception can raise while trying to write to socket if socket is closed or can't be written to.
      */
     public static void writeByteArrayToSocket(final Socket socket, final byte[] bytes) throws IOException {
         new DataOutputStream(socket.getOutputStream()).write(bytes);
     }
-
 }

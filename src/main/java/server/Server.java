@@ -6,45 +6,42 @@ import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-import packagereading.CancelPackageFactory;
-import packagereading.DummyPackageFactory;
-import packagereading.PackageReader;
-import typesofpackages.DummyPackage;
-import typesofpackages.MessagePackage;
+import packages.DummyPackage;
+import packages.MessagePackage;
 import utils.ByteUtils;
+import utils.PackageReader;
 
 /**
- * The Server class for test.
+ * The Server class for testing purposes.
  *
  * @author Marijana Tanovic
  *
  */
-public class Server {
+public final class Server {
 
     /**
-     * Map.
+     * Map of active packages.
      */
     public static final Map<Integer, DummyPackage> activePackages = Collections
             .synchronizedMap(new HashMap<Integer, DummyPackage>());
     /**
-     * Id.
+     * Id of package.
      */
     private static int id;
 
     /**
-     * Registers all types of packages from server.
+     * Utility classes should not have a public or default constructor.
      */
-    public static void registryAllTypesOfPackages() {
-        final int dummyPackageId = 1;
-        final int cancelPackageId = 2;
-        PackageReader.registerTypeOfPackage(dummyPackageId, new DummyPackageFactory());
-        PackageReader.registerTypeOfPackage(cancelPackageId, new CancelPackageFactory());
+    private Server() {}
 
-    }
-
+    /**
+     * Each second, new array of bytes is sent to client with random delay.
+     *
+     * @param clientSocket
+     *            Socket which receives message.
+     */
     private static void sendPackages(final Socket clientSocket) {
         try {
             while (true) {
@@ -64,11 +61,16 @@ public class Server {
         }
     }
 
+    /**
+     * Function that receives packages from client socket.
+     *
+     * @param clientSocket
+     *            Socket from which packages are read.
+     */
     private static void receivePackages(final Socket clientSocket) {
         try {
-            registryAllTypesOfPackages();
             while (true) {
-                final MessagePackage pack = new PackageReader().read(clientSocket);
+                final MessagePackage pack = PackageReader.read(clientSocket);
                 System.out.println("Received: " + pack);
 
                 final Integer idPacket = new Integer(ByteUtils.getNthInteger(pack.getBody(), 0));
@@ -88,12 +90,12 @@ public class Server {
     }
 
     /**
+     * Creates server socket and trying to connect to client. For each sent and received package new thread is started.
      *
      * @param args
-     *            Args.
+     *            Command line arguments.
      */
     public static void main(final String[] args) {
-
         try (ServerSocket server = new ServerSocket(4000)) {
             System.out.println("Listening to port 4000...");
             while (true) {
@@ -106,5 +108,4 @@ public class Server {
             e.printStackTrace();
         }
     }
-
 }

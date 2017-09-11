@@ -1,9 +1,9 @@
-package typesofpackages;
+package packages;
 
 import utils.ByteUtils;
 
 /**
- * The Package class is used for managing packages at client side.
+ * The CancelPackage class is used for managing cancel packages.
  *
  * @author Marijana Tanovic
  */
@@ -15,7 +15,7 @@ public class CancelPackage extends MessagePackage {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor.
+     * CancelPackage constructor.
      *
      * @param header
      *            Package header.
@@ -27,7 +27,7 @@ public class CancelPackage extends MessagePackage {
     }
 
     /**
-     * Constructor.
+     * CancelPackage constructor.
      *
      * @param expiredPackage
      *            Expired dummy package.
@@ -50,4 +50,19 @@ public class CancelPackage extends MessagePackage {
         return ByteUtils.getNthInteger(getBody(), 0);
     }
 
+    /**
+     * Cancel package doesn't require processing, so the same package is returned.
+     */
+    @Override
+    public MessagePackage process() {
+        return this;
+    }
+
+    /**
+     * Loading of cancel package is performed by returning that same package.
+     */
+    @Override
+    public MessagePackage load() {
+        return this;
+    }
 }

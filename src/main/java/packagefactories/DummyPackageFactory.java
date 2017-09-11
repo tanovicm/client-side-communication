@@ -1,14 +1,15 @@
-package packagereading;
+package packagefactories;
 
-import typesofpackages.DummyPackage;
-import typesofpackages.MessagePackage;
+import packages.DummyPackage;
+import packages.MessagePackage;
 
 /**
- * The Package class is used for managing packages at client side.
+ * The DummyPackageFactory class is used for creating dummy package.
  *
  * @author Marijana Tanovic
  */
 public class DummyPackageFactory implements PackageFactory {
+
     /**
      * Creates the dummy package based on header and body.
      *
@@ -22,5 +23,4 @@ public class DummyPackageFactory implements PackageFactory {
     public MessagePackage createPackage(final byte[] header, final byte[] body) {
         return new DummyPackage(header, body);
     }
-
 }

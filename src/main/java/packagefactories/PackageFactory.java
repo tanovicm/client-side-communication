@@ -1,14 +1,18 @@
-package packagereading;
+package packagefactories;
 
-import typesofpackages.MessagePackage;
+import packages.MessagePackage;
 
 /**
  * Interface for package factory.
  *
- * @author Marijana Tanovic
+ * <p>
+ * Interface PackageFactory contains method for creating package based on parameters header and body.
+ * </p>
  *
+ * @author Marijana Tanovic
  */
 public interface PackageFactory {
+
     /**
      * Creates package.
      *

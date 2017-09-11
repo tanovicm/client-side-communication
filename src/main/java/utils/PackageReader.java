@@ -1,34 +1,40 @@
-package packagereading;
+package utils;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 
-import typesofpackages.MessagePackage;
-import utils.ByteUtils;
+import packagefactories.CancelPackageFactory;
+import packagefactories.DummyPackageFactory;
+import packagefactories.PackageFactory;
+import packages.MessagePackage;
 
 /**
- * The Package class is used for managing packages at client side.
+ * The PackageReader class is used for reading bytes from socket.
+ *
+ * <p>
+ * Read bytes from socket and based on read bytes create appropriate package.
+ * </p>
  *
  * @author Marijana Tanovic
  */
-public class PackageReader {
+public final class PackageReader {
 
     /**
      * Map where are kept all types of packages which are in use in application.
      */
     private static HashMap<Integer, PackageFactory> registedFactories = new HashMap<Integer, PackageFactory>();
 
-    /**
-     * @param id
-     *            Id of package (1 or 2).
-     * @param typeOfPackage
-     *            Type of package that should be put in map of registered factories..
-     */
-
-    public static void registerTypeOfPackage(final int id, final PackageFactory typeOfPackage) {
-        registedFactories.put(id, typeOfPackage);
+    // Add types of packages in map of registered factories.
+    static {
+        registedFactories.put(1, new DummyPackageFactory());
+        registedFactories.put(2, new CancelPackageFactory());
     }
+
+    /**
+     * Utility classes should not have a public or default constructor.
+     */
+    private PackageReader() {}
 
     /**
      * Read bytes from socket and creates package based on read id.
@@ -37,15 +43,13 @@ public class PackageReader {
      *            Socket from which are bytes read.
      * @return MessagePackage Created package based on read package id.
      * @throws IOException
-     *             Exception if bytes can't be read. .
+     *             Thrown by readNBytesFromSocket function when reading from socket.
      */
-    public MessagePackage read(final Socket socket) throws IOException {
+    public static MessagePackage read(final Socket socket) throws IOException {
         synchronized (socket) {
-            System.out.println("Waiting for package..");
             final byte[] header = ByteUtils.readNBytesFromSocket(socket, 2 * Integer.BYTES);
             final int packageId = ByteUtils.getNthInteger(header, 0);
             final int packageLength = ByteUtils.getNthInteger(header, 1);
-            System.out.println("Received heade (id: " + packageId + ", len: " + packageLength + ")");
             final byte[] body = ByteUtils.readNBytesFromSocket(socket, packageLength - header.length);
             return registedFactories.get(packageId).createPackage(header, body);
         }

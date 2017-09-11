@@ -1,13 +1,12 @@
-/home/marijana/workspace/Untitled Folder/src/main/java/packagehandlers/StartApplicationHandler.java
-/home/marijana/workspace/Untitled Folder/src/main/java/client/Client.java
-/home/marijana/workspace/Untitled Folder/src/main/java/server/Server.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagehandlers/PackageHandler.java
-/home/marijana/workspace/Untitled Folder/src/main/java/typesofpackages/DummyPackage.java
-/home/marijana/workspace/Untitled Folder/src/main/java/typesofpackages/CancelPackage.java
-/home/marijana/workspace/Untitled Folder/src/main/java/utils/ByteUtils.java
-/home/marijana/workspace/Untitled Folder/src/main/java/typesofpackages/MessagePackage.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagereading/CancelPackageFactory.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagereading/PackageReader.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagereading/DummyPackageFactory.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagehandlers/ExitApplicationHandler.java
-/home/marijana/workspace/Untitled Folder/src/main/java/packagereading/PackageFactory.java
+/home/marijana/workspace/projekat/src/main/java/client/Client.java
+/home/marijana/workspace/projekat/src/main/java/utils/PackageReader.java
+/home/marijana/workspace/projekat/src/main/java/packagefactories/CancelPackageFactory.java
+/home/marijana/workspace/projekat/src/main/java/packagefactories/PackageFactory.java
+/home/marijana/workspace/projekat/src/main/java/packages/CancelPackage.java
+/home/marijana/workspace/projekat/src/main/java/handlers/StartApplicationHandler.java
+/home/marijana/workspace/projekat/src/main/java/utils/ByteUtils.java
+/home/marijana/workspace/projekat/src/main/java/packages/MessagePackage.java
+/home/marijana/workspace/projekat/src/main/java/packages/DummyPackage.java
+/home/marijana/workspace/projekat/src/main/java/packagefactories/DummyPackageFactory.java
+/home/marijana/workspace/projekat/src/main/java/handlers/ExitApplicationHandler.java
+/home/marijana/workspace/projekat/src/main/java/server/Server.java

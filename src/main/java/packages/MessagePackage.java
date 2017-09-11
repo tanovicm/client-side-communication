@@ -1,4 +1,4 @@
-package typesofpackages;
+package packages;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -11,7 +11,6 @@ import utils.ByteUtils;
  *
  * @author Marijana Tanovic
  */
-
 public abstract class MessagePackage implements Serializable {
 
     /**
@@ -30,7 +29,7 @@ public abstract class MessagePackage implements Serializable {
     private byte[] body;
 
     /**
-     * Constructor.
+     * MessagePackage constructor.
      *
      * @param header
      *            Header of received package.
@@ -85,7 +84,7 @@ public abstract class MessagePackage implements Serializable {
      * @param socket
      *            Socket where bytes should be sent.
      * @throws IOException
-     *             Exception may raise while writing.
+     *             Function writeByteArrayToSocket can throw exception while writing to socket if one is closed.
      */
     public void send(final Socket socket) throws IOException {
         synchronized (socket) {
@@ -93,5 +92,19 @@ public abstract class MessagePackage implements Serializable {
             ByteUtils.writeByteArrayToSocket(socket, body);
         }
     }
+
+    /**
+     * Processes package.
+     *
+     * @return Processed package.
+     */
+    public abstract MessagePackage process();
+
+    /**
+     * Loads package.
+     *
+     * @return Loaded package.
+     */
+    public abstract MessagePackage load();
 
 }

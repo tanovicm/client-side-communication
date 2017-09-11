@@ -1,14 +1,15 @@
-package packagereading;
+package packagefactories;
 
-import typesofpackages.CancelPackage;
-import typesofpackages.MessagePackage;
+import packages.CancelPackage;
+import packages.MessagePackage;
 
 /**
- * The Package class is used for managing packages at client side.
+ * The CancelPackageFactory class is used creating cancel package.
  *
  * @author Marijana Tanovic
  */
 public class CancelPackageFactory implements PackageFactory {
+
     /**
      * Creates cancel package from parameters.
      *

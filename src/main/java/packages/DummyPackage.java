@@ -1,14 +1,11 @@
-package typesofpackages;
+package packages;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
-import client.Client;
 import utils.ByteUtils;
 
 /**
- * The DummyPackage class is used for managing dummy packages at client side.
+ * The DummyPackage class is used for managing dummy packages.
  *
  * @author Marijana Tanovic
  */
@@ -25,7 +22,7 @@ public class DummyPackage extends MessagePackage {
     private long timeOfCreation;
 
     /**
-     * Constructor with additional set of time of creation.
+     * DummyPackage Constructor with additional set of time of creation.
      *
      * @param header
      *            Header used for creating dummy package.
@@ -74,25 +71,24 @@ public class DummyPackage extends MessagePackage {
     }
 
     /**
-     * Sends dummy package to socket.
-     *
-     * @throws IOException
-     *             Sending includes writing to socket which may throw exception.
+     * Dummy package is processed waiting for delay to expire.
      */
     @Override
-    public void send(final Socket socket) throws IOException {
-
-        Client.activePackages.add(this);
-
+    public MessagePackage process() {
         try {
             TimeUnit.SECONDS.sleep(getDelay());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        super.send(socket);
-
-        Client.activePackages.remove(this);
+        return this;
     }
 
+    /**
+     * Loading dummy package is performed based on expiration of package. If package is expired, from dummy package is created
+     * new cancel package and returned, otherwise, same package is returned.
+     */
+    @Override
+    public MessagePackage load() {
+        return expired() ? new CancelPackage(this) : this;
+    }
 }
