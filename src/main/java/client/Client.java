@@ -20,7 +20,7 @@ import utils.PackageReader;
  *
  * <p>
  * The client class is create connection with server and listens to incoming data. For each received set of data starts thread
- * and leaves to thread further operations.
+ * and leaves further operations to thread.
  * </p>
  *
  * @author Marijana Tanovic
